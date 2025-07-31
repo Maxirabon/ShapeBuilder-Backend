@@ -21,10 +21,12 @@ public class User {
     private char gender;
     private int age;
     private double weight;
+    private int height;
     private String email;
     private String password;
-    private Role role;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Calendar> days = new ArrayList<>();
