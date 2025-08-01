@@ -1,7 +1,9 @@
 package com.example.shapebuilderbackend.Service;
 
+import com.example.shapebuilderbackend.Dto.ChangePasswordRequest;
 import com.example.shapebuilderbackend.Dto.LoginRequest;
 import com.example.shapebuilderbackend.Dto.RegisterRequest;
+import com.example.shapebuilderbackend.Dto.UpdateProfileRequest;
 import com.example.shapebuilderbackend.Exception.ConflictException;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
 import com.example.shapebuilderbackend.Exception.UnauthorizedException;
@@ -53,17 +55,28 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void loginUser(LoginRequest loginRequest) {
+    public String loginUser(LoginRequest loginRequest) {
         User user = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new NotFoundException("Użytkownik o podanym emailu nie istnieje"));
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new UnauthorizedException("Invalid credentials");
         }
-        String token = jwtService.generateToken(user);
-        ResponseEntity.ok(Map.of(
-                "token", token
-        ));
+        return jwtService.generateToken(user);
+    }
+
+    public void updateProfile(UpdateProfileRequest updateProfileRequest) {
+        User user = getCurrentUser();
+        user.setAge(updateProfileRequest.getAge());
+        user.setHeight(updateProfileRequest.getHeight());
+        user.setWeight(updateProfileRequest.getWeight());
+        userRepository.save(user);
+    }
+
+    public void changePassword(ChangePasswordRequest changePasswordRequest) {
+        User user = getCurrentUser();
+        user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        userRepository.save(user);
     }
 
     public User getCurrentUser() {

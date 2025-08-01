@@ -18,12 +18,12 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24h
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;
 
     public String generateToken(User user) {
         return Jwts.builder()
-                .setSubject(user.getEmail()) // 👈 email jako identyfikator
-                .claim("role", user.getRole().name()) // 👈 rola jako claim
+                .setSubject(user.getEmail())
+                .claim("role", user.getRole().name())
                 .claim("firstName", user.getFirstName())
                 .claim("lastName", user.getLastName())
                 .setIssuedAt(new Date())
