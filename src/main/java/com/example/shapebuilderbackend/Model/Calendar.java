@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class Calendar {
     private Long id;
 
     private LocalDate day;
-    private LocalDate modification_date;
+    private LocalDateTime modification_date;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")

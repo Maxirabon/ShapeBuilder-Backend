@@ -12,13 +12,10 @@ import com.example.shapebuilderbackend.Model.User;
 import com.example.shapebuilderbackend.Repository.UserRepository;
 import com.example.shapebuilderbackend.Security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 public class UserService {
@@ -31,14 +28,18 @@ public class UserService {
     @Autowired
     private JwtService jwtService;
 
-    public UserService(UserRepository userRepository,  PasswordEncoder passwordEncoder,  JwtService jwtService) {
+    @Autowired
+    private CalendarService calendarService;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, CalendarService calendarService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.calendarService = calendarService;
     }
 
     public void createUser(RegisterRequest registerRequest) {
-        if(userRepository.existsByEmail(registerRequest.getEmail())) {
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new ConflictException("Użytkownik o podanym emailu już istnieje");
         }
         User user = new User();
@@ -51,6 +52,7 @@ public class UserService {
         user.setAge(registerRequest.getAge());
         user.setWeight(registerRequest.getWeight());
         user.setHeight(registerRequest.getHeight());
+        calendarService.generateDaysForUser(user);
 
         userRepository.save(user);
     }
