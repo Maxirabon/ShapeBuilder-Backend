@@ -62,7 +62,7 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("Użytkownik o podanym emailu nie istnieje"));
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new UnauthorizedException("Invalid credentials");
+            throw new UnauthorizedException("Nieprawidłowe hasło");
         }
         return jwtService.generateToken(user);
     }

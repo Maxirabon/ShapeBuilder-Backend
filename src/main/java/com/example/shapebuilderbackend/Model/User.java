@@ -3,6 +3,7 @@ package com.example.shapebuilderbackend.Model;
 import com.example.shapebuilderbackend.Model.Role.Role;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +30,10 @@ public class User {
     private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @ToString.Exclude
     private List<Calendar> days = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @ToString.Exclude
     private List<Product> products = new ArrayList<>();
 }

@@ -1,14 +1,14 @@
 package com.example.shapebuilderbackend.Controller;
 
+import com.example.shapebuilderbackend.Dto.AddExerciseRequest;
 import com.example.shapebuilderbackend.Dto.ChangePasswordRequest;
 import com.example.shapebuilderbackend.Dto.UpdateProfileRequest;
+import com.example.shapebuilderbackend.Service.ExerciseService;
 import com.example.shapebuilderbackend.Service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -16,6 +16,9 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    ExerciseService exerciseService;
 
     @PutMapping("/updateProfile")
     public ResponseEntity<?> updateUserProfile(@RequestBody UpdateProfileRequest updateProfileRequest) {
@@ -28,4 +31,11 @@ public class UserController {
         userService.changePassword(changePasswordRequest);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/addExercise")
+    public ResponseEntity<?> addUserExerciseToDay(@Valid @RequestBody AddExerciseRequest addExerciseRequest) {
+        exerciseService.addExercise(addExerciseRequest);
+        return ResponseEntity.ok().build();
+    }
+
 }
