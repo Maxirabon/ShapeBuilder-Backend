@@ -4,6 +4,7 @@ import com.example.shapebuilderbackend.Dto.AddExerciseRequest;
 import com.example.shapebuilderbackend.Dto.ChangePasswordRequest;
 import com.example.shapebuilderbackend.Dto.UpdateProfileRequest;
 import com.example.shapebuilderbackend.Service.ExerciseService;
+import com.example.shapebuilderbackend.Service.ExerciseTemplateService;
 import com.example.shapebuilderbackend.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class UserController {
     @Autowired
     ExerciseService exerciseService;
 
+    @Autowired
+    ExerciseTemplateService exerciseTemplateService;
+
     @PutMapping("/updateProfile")
     public ResponseEntity<?> updateUserProfile(@RequestBody UpdateProfileRequest updateProfileRequest) {
         userService.updateProfile(updateProfileRequest);
@@ -30,6 +34,11 @@ public class UserController {
     public ResponseEntity<?> changeUserPassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
         userService.changePassword(changePasswordRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/getAllExerciseTemplates")
+    public ResponseEntity<?> getAllExerciseTemplates() {
+        return ResponseEntity.ok(exerciseTemplateService.getAllExerciseTemplates());
     }
 
     @PostMapping("/addExercise")

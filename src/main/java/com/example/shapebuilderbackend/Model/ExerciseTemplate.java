@@ -13,4 +13,12 @@ public class ExerciseTemplate {
 
     @Column(unique = true, nullable = false)
     private String name;
+
+    public ExerciseTemplate(String name) {
+        this.name = name;
+    }
+
+    public ExerciseTemplate() {
+
+    }
 }
