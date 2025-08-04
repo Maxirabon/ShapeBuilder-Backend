@@ -2,6 +2,10 @@ package com.example.shapebuilderbackend.Model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -21,4 +25,8 @@ public class ExerciseTemplate {
     public ExerciseTemplate() {
 
     }
+
+    @OneToMany(mappedBy = "exerciseTemplate", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<Exercise> exercises = new ArrayList<>();
 }

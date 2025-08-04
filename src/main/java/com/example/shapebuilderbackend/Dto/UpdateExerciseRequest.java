@@ -7,12 +7,10 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class AddExerciseRequest {
-    @NotNull
-    private LocalDate day;
+public class UpdateExerciseRequest {
 
     @NotNull
-    private Long exerciseTemplateId;
+    private Long id;
 
     @Min(1)
     private int sets;

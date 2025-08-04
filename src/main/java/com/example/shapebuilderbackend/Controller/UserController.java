@@ -1,8 +1,6 @@
 package com.example.shapebuilderbackend.Controller;
 
-import com.example.shapebuilderbackend.Dto.AddExerciseRequest;
-import com.example.shapebuilderbackend.Dto.ChangePasswordRequest;
-import com.example.shapebuilderbackend.Dto.UpdateProfileRequest;
+import com.example.shapebuilderbackend.Dto.*;
 import com.example.shapebuilderbackend.Service.ExerciseService;
 import com.example.shapebuilderbackend.Service.ExerciseTemplateService;
 import com.example.shapebuilderbackend.Service.UserService;
@@ -45,6 +43,18 @@ public class UserController {
     public ResponseEntity<?> addUserExerciseToDay(@Valid @RequestBody AddExerciseRequest addExerciseRequest) {
         exerciseService.addExercise(addExerciseRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/updateExercise")
+    public ResponseEntity<?> updateUserExercise(@Valid @RequestBody UpdateExerciseRequest updateExerciseRequest) {
+        exerciseService.updateExercise(updateExerciseRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/deleteExercise")
+    public ResponseEntity<?> deleteUserExercise(@RequestBody DeleteExerciseRequest deleteExerciseRequest) {
+        exerciseService.deleteExercise(deleteExerciseRequest);
+        return ResponseEntity.ok().body("Ćwiczenie zostało usunięte.");
     }
 
 }

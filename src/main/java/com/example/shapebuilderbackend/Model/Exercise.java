@@ -27,4 +27,19 @@ public class Exercise {
     @ToString.Exclude
     private ExerciseTemplate exerciseTemplate;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Exercise exercise = (Exercise) o;
+
+        return id != null && id.equals(exercise.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
 }
