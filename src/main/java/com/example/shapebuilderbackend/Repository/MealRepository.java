@@ -1,4 +1,7 @@
 package com.example.shapebuilderbackend.Repository;
 
-public interface MealRepository {
+import com.example.shapebuilderbackend.Model.Meal;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MealRepository extends JpaRepository<Meal, Long> {
 }

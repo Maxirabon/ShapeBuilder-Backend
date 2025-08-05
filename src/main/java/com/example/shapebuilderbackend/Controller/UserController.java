@@ -1,10 +1,12 @@
 package com.example.shapebuilderbackend.Controller;
 
 import com.example.shapebuilderbackend.Dto.*;
-import com.example.shapebuilderbackend.Service.ExerciseService;
-import com.example.shapebuilderbackend.Service.ExerciseTemplateService;
-import com.example.shapebuilderbackend.Service.ProductService;
-import com.example.shapebuilderbackend.Service.UserService;
+import com.example.shapebuilderbackend.Exception.NotFoundException;
+import com.example.shapebuilderbackend.Model.Meal;
+import com.example.shapebuilderbackend.Model.MealProduct;
+import com.example.shapebuilderbackend.Repository.MealProductRepository;
+import com.example.shapebuilderbackend.Repository.MealRepository;
+import com.example.shapebuilderbackend.Service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,16 +17,30 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    ExerciseService exerciseService;
+    private ExerciseService exerciseService;
 
     @Autowired
-    ExerciseTemplateService exerciseTemplateService;
+    private ExerciseTemplateService exerciseTemplateService;
 
     @Autowired
-    ProductService productService;
+    private ProductService productService;
+
+    @Autowired
+    private AppService appService;
+
+    @Autowired
+    private MealProductService mealProductService;
+
+    @Autowired
+    private MealProductRepository mealProductRepository;
+
+    @Autowired
+    private MealRepository mealRepository;
+    @Autowired
+    private MealService mealService;
 
     @PutMapping("/updateProfile")
     public ResponseEntity<?> updateUserProfile(@RequestBody UpdateProfileRequest updateProfileRequest) {
@@ -65,5 +81,29 @@ public class UserController {
     public ResponseEntity<?> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
     }
+
+    @GetMapping("/getCaloricRequisition")
+    public ResponseEntity<?> getCaloricRequisition() { return ResponseEntity.ok(appService.calculateCaloricRequisition());}
+
+    @PostMapping("/addMealProduct")
+    public ResponseEntity<?> addMealProduct(@Valid @RequestBody AddMealProductRequest addMealProductRequest) {
+        mealProductService.addMealProduct(addMealProductRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/getProductSummary/{id}")
+   public DtoProductSummary getProductSummary(@PathVariable Long id) {
+        MealProduct mealProduct = mealProductRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Nie znaleziono produktu o id: " + id));
+        return productService.calculateProductSummary(mealProduct);
+    }
+
+    @GetMapping("/getMealSummary/{id}")
+    public DtoMealSummary getMealSummary(@PathVariable Long id) {
+        Meal meal = mealRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Nie znaleziono posiłku o id: " + id));
+        return mealService.calculateMealSummary(meal);
+    }
+
 
 }

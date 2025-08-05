@@ -17,4 +17,5 @@ public class RegisterRequest {
     private int age;
     private double weight;
     private int height;
+    private String activity;
 }

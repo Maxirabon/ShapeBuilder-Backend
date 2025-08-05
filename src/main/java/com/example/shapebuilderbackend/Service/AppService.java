@@ -23,9 +23,13 @@ public class AppService {
     @Autowired
     private CalendarService calendarService;
 
-    public AppService(UserRepository userRepository, CalendarService calendarService) {
+    @Autowired
+    private UserService userService;
+
+    public AppService(UserRepository userRepository, CalendarService calendarService,  UserService userService) {
         this.userRepository = userRepository;
         this.calendarService = calendarService;
+        this.userService = userService;
     }
 
     @Scheduled(cron = "0 0 0 1 1 *") // (cron = "0 0 0 1 1 *")1 stycznia o północy każdego roku
@@ -52,5 +56,19 @@ public class AppService {
                 userRepository.save(user);
             }
         }
+    }
+
+    public Double calculateCaloricRequisition() {
+        User user = userService.getCurrentUser();
+        double PPM;
+        double PAL = userService.getUserPAL();
+        double caloriesNeeded;
+        if (user.getGender() == 'M') {
+            PPM = 10 * user.getWeight() + 6.25 * user.getHeight() - 5 * user.getAge() + 5;
+        } else {
+            PPM = 10 * user.getWeight() + 6.25 * user.getHeight() - 5 * user.getAge() - 161;
+        }
+        caloriesNeeded = PPM * PAL;
+        return (double) Math.round(caloriesNeeded);
     }
 }

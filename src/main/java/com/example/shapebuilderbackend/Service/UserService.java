@@ -7,6 +7,7 @@ import com.example.shapebuilderbackend.Dto.UpdateProfileRequest;
 import com.example.shapebuilderbackend.Exception.ConflictException;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
 import com.example.shapebuilderbackend.Exception.UnauthorizedException;
+import com.example.shapebuilderbackend.Model.Activity.Activity;
 import com.example.shapebuilderbackend.Model.Role.Role;
 import com.example.shapebuilderbackend.Model.User;
 import com.example.shapebuilderbackend.Repository.UserRepository;
@@ -42,6 +43,14 @@ public class UserService {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new ConflictException("Użytkownik o podanym emailu już istnieje");
         }
+
+        Activity activity;
+        try {
+            activity = Activity.valueOf(registerRequest.getActivity().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException("Nieprawidłowa wartość aktywności: " + registerRequest.getActivity());
+        }
+
         User user = new User();
         user.setEmail(registerRequest.getEmail());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
@@ -52,6 +61,7 @@ public class UserService {
         user.setAge(registerRequest.getAge());
         user.setWeight(registerRequest.getWeight());
         user.setHeight(registerRequest.getHeight());
+        user.setActivity(activity);
         calendarService.generateDaysForUser(user);
 
         userRepository.save(user);
@@ -79,6 +89,19 @@ public class UserService {
         User user = getCurrentUser();
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userRepository.save(user);
+    }
+
+    public double getUserPAL(){
+        User user = getCurrentUser();
+        String activityLevel = String.valueOf(user.getActivity());
+        return switch (activityLevel) {
+            case "BRAK" -> 1.2;
+            case "MALA" -> 1.375;
+            case "SREDNIA" -> 1.55;
+            case "DUZA" -> 1.725;
+            case "BARDZO_DUZA" -> 1.9;
+            default -> 1.2;
+        };
     }
 
     public User getCurrentUser() {

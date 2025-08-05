@@ -1,5 +1,6 @@
 package com.example.shapebuilderbackend.Model;
 
+import com.example.shapebuilderbackend.Model.Activity.Activity;
 import com.example.shapebuilderbackend.Model.Role.Role;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -28,6 +29,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Enumerated(EnumType.STRING)
+    private Activity activity;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @ToString.Exclude
