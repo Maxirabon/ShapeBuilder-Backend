@@ -26,9 +26,9 @@ public class ExerciseTemplateInitializer implements CommandLineRunner {
             return;
         }
 
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream("data.sql")) {
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("exercises.sql")) {
             if (is == null) {
-                throw new FileNotFoundException("Nie znaleziono pliku data.sql w resources");
+                throw new FileNotFoundException("Nie znaleziono pliku exercises.sql w resources");
             }
 
             List<String> exerciseNames = new BufferedReader(new InputStreamReader(is))

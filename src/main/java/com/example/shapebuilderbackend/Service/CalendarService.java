@@ -1,6 +1,7 @@
 package com.example.shapebuilderbackend.Service;
 
 import com.example.shapebuilderbackend.Model.Calendar;
+import com.example.shapebuilderbackend.Model.Meal;
 import com.example.shapebuilderbackend.Model.User;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,21 @@ public class CalendarService {
             day.setDay(date);
             day.setModification_date(LocalDateTime.now());
             day.setUser(user);
+            List<Meal> meals = createDefaultMealsForDay(day);
+            day.setMeals(meals);
+
             newDays.add(day);
         }
+    }
+
+    private List<Meal> createDefaultMealsForDay(Calendar day) {
+        List<String> mealDescriptions = List.of("Śniadanie", "Obiad", "Przekąska", "Kolacja");
+
+        return mealDescriptions.stream().map(desc -> {
+            Meal meal = new Meal();
+            meal.setDescription(desc);
+            meal.setCalendar(day);
+            return meal;
+        }).toList();
     }
 }

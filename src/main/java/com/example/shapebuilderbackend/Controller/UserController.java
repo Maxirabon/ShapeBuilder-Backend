@@ -3,6 +3,7 @@ package com.example.shapebuilderbackend.Controller;
 import com.example.shapebuilderbackend.Dto.*;
 import com.example.shapebuilderbackend.Service.ExerciseService;
 import com.example.shapebuilderbackend.Service.ExerciseTemplateService;
+import com.example.shapebuilderbackend.Service.ProductService;
 import com.example.shapebuilderbackend.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class UserController {
 
     @Autowired
     ExerciseTemplateService exerciseTemplateService;
+
+    @Autowired
+    ProductService productService;
 
     @PutMapping("/updateProfile")
     public ResponseEntity<?> updateUserProfile(@RequestBody UpdateProfileRequest updateProfileRequest) {
@@ -55,6 +59,11 @@ public class UserController {
     public ResponseEntity<?> deleteUserExercise(@RequestBody DeleteExerciseRequest deleteExerciseRequest) {
         exerciseService.deleteExercise(deleteExerciseRequest);
         return ResponseEntity.ok().body("Ćwiczenie zostało usunięte.");
+    }
+
+    @GetMapping("/getAllProducts")
+    public ResponseEntity<?> getAllProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
     }
 
 }
