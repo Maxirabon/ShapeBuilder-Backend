@@ -1,24 +1,30 @@
 package com.example.shapebuilderbackend.Service;
 
-import com.example.shapebuilderbackend.Dto.ChangePasswordRequest;
-import com.example.shapebuilderbackend.Dto.LoginRequest;
-import com.example.shapebuilderbackend.Dto.RegisterRequest;
-import com.example.shapebuilderbackend.Dto.UpdateProfileRequest;
+import com.example.shapebuilderbackend.Dto.*;
 import com.example.shapebuilderbackend.Exception.ConflictException;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
 import com.example.shapebuilderbackend.Exception.UnauthorizedException;
 import com.example.shapebuilderbackend.Model.Activity.Activity;
+import com.example.shapebuilderbackend.Model.MealProduct;
+import com.example.shapebuilderbackend.Model.Product;
 import com.example.shapebuilderbackend.Model.Role.Role;
 import com.example.shapebuilderbackend.Model.User;
+import com.example.shapebuilderbackend.Repository.ProductRepository;
 import com.example.shapebuilderbackend.Repository.UserRepository;
 import com.example.shapebuilderbackend.Security.JwtService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
+@Transactional
 public class UserService {
     @Autowired
     private UserRepository userRepository;
@@ -32,11 +38,15 @@ public class UserService {
     @Autowired
     private CalendarService calendarService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, CalendarService calendarService) {
+    @Autowired
+    private ProductRepository productRepository;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, CalendarService calendarService, ProductRepository productRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.calendarService = calendarService;
+        this.productRepository = productRepository;
     }
 
     public void createUser(RegisterRequest registerRequest) {
@@ -91,7 +101,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public double getUserPAL(){
+    public double getUserPAL() {
         User user = getCurrentUser();
         String activityLevel = String.valueOf(user.getActivity());
         return switch (activityLevel) {
@@ -102,6 +112,59 @@ public class UserService {
             case "BARDZO_DUZA" -> 1.9;
             default -> 1.2;
         };
+    }
+
+    public void addUserProduct(AddUserProductRequest addUserProductRequest) {
+        User user = getCurrentUser();
+        Product product = new Product();
+        product.setName(addUserProductRequest.getName());
+        product.setProtein(addUserProductRequest.getProtein());
+        product.setCarbs(addUserProductRequest.getCarbs());
+        product.setFat(addUserProductRequest.getFat());
+        product.setCalories(addUserProductRequest.getCalories());
+        product.setUser(user);
+        product.setCustom(true);
+        productRepository.save(product);
+    }
+
+    public List<GetAllUserProducts> getAllUserProducts() {
+        User user = getCurrentUser();
+        return userRepository.findAllByUserId(user.getId());
+    }
+
+    public void updateUserProduct(UpdateUserProductRequest updateUserProductRequest) {
+        User user = getCurrentUser();
+
+        Product product = productRepository.findById(updateUserProductRequest.getId())
+                .orElseThrow(() -> new NotFoundException("Nie znaleziono produktu"));
+
+        if (!product.getUser().getId().equals(user.getId())) {
+            throw new SecurityException("Nie masz dostępu do tego produktu");
+        }
+
+        product.setName(updateUserProductRequest.getName());
+        product.setProtein(updateUserProductRequest.getProtein());
+        product.setCarbs(updateUserProductRequest.getCarbs());
+        product.setFat(updateUserProductRequest.getFat());
+        product.setCalories(updateUserProductRequest.getCalories());
+
+        productRepository.save(product);
+    }
+
+    public void deleteUserProduct(DeleteUserProductRequest deleteUserProductRequest) {
+        Long userId = getCurrentUser().getId();
+        User user = userRepository.findByIdWithProducts(userId)
+                .orElseThrow(() -> new NotFoundException("Nie znaleziono użytkownika"));
+
+        Product product = productRepository.findById(deleteUserProductRequest.getId())
+                .orElseThrow(() -> new NotFoundException("Nie znaleziono produktu"));
+
+        if (!product.getUser().getId().equals(userId)) {
+            throw new SecurityException("Nie masz dostępu do tego produktu");
+        }
+
+        user.getProducts().removeIf(p -> p.getId().equals(product.getId()));
+        userRepository.save(user);
     }
 
     public User getCurrentUser() {

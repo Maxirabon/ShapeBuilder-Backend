@@ -2,6 +2,7 @@ package com.example.shapebuilderbackend.Model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -16,10 +17,12 @@ public class MealProduct {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "meal_id")
+    @ToString.Exclude
     private Meal meal;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "product_id")
+    @ToString.Exclude
     private Product product;
 
     @Column(nullable = false)

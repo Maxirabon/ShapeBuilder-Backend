@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -122,6 +124,34 @@ public class UserController {
     @GetMapping("/getDaySummary/{id}")
     public DtoDaySummary getDaySummary(@PathVariable Long id) {
         return calendarService.getDaySummary(id);
+    }
+
+    @GetMapping("/getDayExerciseSummary/{id}")
+    public DtoDayExerciseSummary getDayExerciseSummary(@PathVariable Long id) {
+        return calendarService.getDayExerciseSummary(id);
+    }
+
+    @PostMapping("/addUserProduct")
+    public ResponseEntity<?> addUserProduct(@Valid @RequestBody AddUserProductRequest addUserProductRequest) {
+        userService.addUserProduct(addUserProductRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/getUserProducts")
+    public List<GetAllUserProducts> getUserProducts() {
+        return userService.getAllUserProducts();
+    }
+
+    @PutMapping("/updateUserProduct")
+    public ResponseEntity<?> updateUserProduct(@Valid @RequestBody UpdateUserProductRequest updateUserProductRequest) {
+        userService.updateUserProduct(updateUserProductRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/deleteUserProduct")
+    public ResponseEntity<?> deleteUserProduct(@RequestBody DeleteUserProductRequest deleteUserProductRequest) {
+        userService.deleteUserProduct(deleteUserProductRequest);
+        return ResponseEntity.ok().body("Posiłek został usunięty.");
     }
 
 

@@ -37,7 +37,7 @@ public class User {
     @ToString.Exclude
     private List<Calendar> days = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Product> products = new ArrayList<>();
 }

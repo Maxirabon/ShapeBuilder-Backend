@@ -1,9 +1,12 @@
 package com.example.shapebuilderbackend.Service;
 
+import com.example.shapebuilderbackend.Dto.DtoDayExerciseSummary;
 import com.example.shapebuilderbackend.Dto.DtoDaySummary;
+import com.example.shapebuilderbackend.Dto.DtoExerciseSummary;
 import com.example.shapebuilderbackend.Dto.DtoMealSummary;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
 import com.example.shapebuilderbackend.Model.Calendar;
+import com.example.shapebuilderbackend.Model.Exercise;
 import com.example.shapebuilderbackend.Model.Meal;
 import com.example.shapebuilderbackend.Model.User;
 import com.example.shapebuilderbackend.Repository.CalendarRepository;
@@ -88,5 +91,21 @@ public class CalendarService {
         Calendar calendar = calendarRepository.findById(calendarId)
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono dnia o id: " + calendarId));
         return calculateDaySummary(calendar);
+    }
+
+    public DtoDayExerciseSummary getDayExerciseSummary(Long calendarId) {
+        Calendar calendar = calendarRepository.findById(calendarId)
+                .orElseThrow(() -> new NotFoundException("Nie znaleziono dnia o id: " + calendarId));
+        List<DtoExerciseSummary> exercises = calendar.getExercises().stream()
+                .map(e -> new DtoExerciseSummary(
+                        e.getId(),
+                        e.getExerciseTemplate().getName(),
+                        e.getSets(),
+                        e.getRepetitions(),
+                        e.getWeight()
+                ))
+                .toList();
+
+        return new DtoDayExerciseSummary(calendar.getDay(), exercises);
     }
 }

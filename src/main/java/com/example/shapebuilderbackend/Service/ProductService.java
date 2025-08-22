@@ -1,5 +1,6 @@
 package com.example.shapebuilderbackend.Service;
 
+import com.example.shapebuilderbackend.Dto.AddUserProductRequest;
 import com.example.shapebuilderbackend.Dto.DtoProductSummary;
 import com.example.shapebuilderbackend.Dto.GetAllProductsResponse;
 import com.example.shapebuilderbackend.Exception.BadRequestException;
@@ -22,7 +23,7 @@ public class ProductService {
 
     public List<GetAllProductsResponse> getAllProducts(){
         return productRepository.findAll().stream()
-                .map(et -> new GetAllProductsResponse(et.getId(), et.getName(), et.getProtein(), et.getFat(), et.getCarbs(), et.getCalories()))
+                .map(et -> new GetAllProductsResponse(et.getId(), et.getName(), et.getProtein(), et.getFat(), et.getCarbs(), et.getCalories(), et.isCustom()))
                 .collect(Collectors.toList());
     };
 
