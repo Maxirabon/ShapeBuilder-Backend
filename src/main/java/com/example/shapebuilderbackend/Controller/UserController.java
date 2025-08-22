@@ -41,6 +41,8 @@ public class UserController {
     private MealRepository mealRepository;
     @Autowired
     private MealService mealService;
+    @Autowired
+    private CalendarService calendarService;
 
     @PutMapping("/updateProfile")
     public ResponseEntity<?> updateUserProfile(@RequestBody UpdateProfileRequest updateProfileRequest) {
@@ -91,6 +93,18 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/updateMealProduct")
+    public ResponseEntity<?> updateMealProduct(@Valid @RequestBody UpdateMealProductRequest updateMealProductRequest) {
+        mealProductService.updateMealProduct(updateMealProductRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/deleteMealProduct")
+    public ResponseEntity<?> deleteMealProduct(@RequestBody DeleteMealProductRequest deleteMealProductRequest) {
+        mealProductService.deleteMealProduct(deleteMealProductRequest);
+        return ResponseEntity.ok().body("Posiłek został usunięty.");
+    }
+
     @GetMapping("/getProductSummary/{id}")
    public DtoProductSummary getProductSummary(@PathVariable Long id) {
         MealProduct mealProduct = mealProductRepository.findById(id)
@@ -103,6 +117,11 @@ public class UserController {
         Meal meal = mealRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono posiłku o id: " + id));
         return mealService.calculateMealSummary(meal);
+    }
+
+    @GetMapping("/getDaySummary/{id}")
+    public DtoDaySummary getDaySummary(@PathVariable Long id) {
+        return calendarService.getDaySummary(id);
     }
 
 

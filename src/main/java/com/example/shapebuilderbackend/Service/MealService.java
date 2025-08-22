@@ -17,9 +17,6 @@ import static java.lang.Math.round;
 public class MealService {
 
     @Autowired
-    private MealRepository mealRepository;
-
-    @Autowired
     private ProductService productService;
 
     public DtoMealSummary calculateMealSummary(Meal meal) {
