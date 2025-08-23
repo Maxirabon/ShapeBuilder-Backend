@@ -2,6 +2,7 @@ package com.example.shapebuilderbackend.Service;
 
 import com.example.shapebuilderbackend.Dto.*;
 import com.example.shapebuilderbackend.Exception.ConflictException;
+import com.example.shapebuilderbackend.Exception.ForbiddenException;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
 import com.example.shapebuilderbackend.Exception.UnauthorizedException;
 import com.example.shapebuilderbackend.Model.Activity.Activity;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -165,6 +167,19 @@ public class UserService {
 
         user.getProducts().removeIf(p -> p.getId().equals(product.getId()));
         userRepository.save(user);
+    }
+
+    public List<GetAllUsersResponse> getAllUsers() {
+        User user = getCurrentUser();
+        if(user.getRole().equals(Role.ROLE_ADMIN)) {
+            return userRepository.findAll().stream()
+                    .filter(u -> !u.getId().equals(user.getId()))
+                    .map(u -> new GetAllUsersResponse(u.getId(), u.getFirstName(), u.getLastName(), u.getGender(), u.getAge(), u.getWeight(), u.getHeight(), u.getEmail(), u.getPassword(), u.getRole(), u.getActivity()))
+                    .collect(Collectors.toList());
+        }
+        else{
+            throw new ForbiddenException("Nie masz uprawnień by wyświetlić profile innych użytkowników");
+        }
     }
 
     public User getCurrentUser() {
