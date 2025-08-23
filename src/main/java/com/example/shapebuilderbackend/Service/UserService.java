@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,6 +95,7 @@ public class UserService {
         user.setAge(updateProfileRequest.getAge());
         user.setHeight(updateProfileRequest.getHeight());
         user.setWeight(updateProfileRequest.getWeight());
+        user.setActivity(updateProfileRequest.getActivity());
         userRepository.save(user);
     }
 
@@ -178,7 +180,31 @@ public class UserService {
                     .collect(Collectors.toList());
         }
         else{
-            throw new ForbiddenException("Nie masz uprawnień by wyświetlić profile innych użytkowników");
+            throw new ForbiddenException("Nie masz uprawnien by wyświetlic profile innych użytkownikow");
+        }
+    }
+
+    public void changeUseRole(ChangeUserRole changeUserRole) {
+        User admin = getCurrentUser();
+        User user =  userRepository.findById(changeUserRole.getId())
+                .orElseThrow(() -> new NotFoundException("Nie znaleziono uzytkownika"));
+        if(admin.getRole().equals(Role.ROLE_ADMIN)) {
+            user.setRole(changeUserRole.getRole());
+            userRepository.save(user);
+        }else{
+            throw new ForbiddenException("Nie masz uprawnien by zmieniac role innych uzytkownikow");
+        }
+    }
+
+    public void deleteUser(DeleteUserRequest deleteUserRequest) {
+        User admin = getCurrentUser();
+        User user =  userRepository.findById(deleteUserRequest.getId())
+                .orElseThrow(() -> new NotFoundException("Nie znaleziono uzytkownika"));
+
+        if(admin.getRole().equals(Role.ROLE_ADMIN)) {
+            userRepository.delete(user);
+        }else{
+            throw new ForbiddenException("Nie masz uprawnien by usuwac innych uzytkownikow");
         }
     }
 
