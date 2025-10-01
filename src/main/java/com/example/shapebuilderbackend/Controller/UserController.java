@@ -154,5 +154,11 @@ public class UserController {
         return ResponseEntity.ok().body("Posiłek został usunięty.");
     }
 
+    @GetMapping("/getUserDays")
+    public ResponseEntity<?> getUserDays() {
+        List<GetAllUserDays> days = userService.getAllUserDays();
+        return ResponseEntity.ok(days);
+    }
+
 
 }

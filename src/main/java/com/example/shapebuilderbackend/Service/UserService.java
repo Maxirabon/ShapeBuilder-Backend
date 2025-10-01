@@ -208,6 +208,17 @@ public class UserService {
         }
     }
 
+    public List<GetAllUserDays> getAllUserDays() {
+        User user = getCurrentUser();
+        return user.getDays().stream()
+                .map(e -> new GetAllUserDays(
+                        e.getId(),
+                        e.getDay(),
+                        e.getModification_date()
+                ))
+                .toList();
+    }
+
     public User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return (User) auth.getPrincipal();

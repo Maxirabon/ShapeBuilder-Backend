@@ -1,15 +1,13 @@
 package com.example.shapebuilderbackend.Service;
 
-import com.example.shapebuilderbackend.Dto.DtoDayExerciseSummary;
-import com.example.shapebuilderbackend.Dto.DtoDaySummary;
-import com.example.shapebuilderbackend.Dto.DtoExerciseSummary;
-import com.example.shapebuilderbackend.Dto.DtoMealSummary;
+import com.example.shapebuilderbackend.Dto.*;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
 import com.example.shapebuilderbackend.Model.Calendar;
 import com.example.shapebuilderbackend.Model.Exercise;
 import com.example.shapebuilderbackend.Model.Meal;
 import com.example.shapebuilderbackend.Model.User;
 import com.example.shapebuilderbackend.Repository.CalendarRepository;
+import com.example.shapebuilderbackend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +24,9 @@ public class CalendarService {
 
     @Autowired
     private CalendarRepository calendarRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public void generateDaysForUser(User user) {
         List<Calendar> newDays = new ArrayList<>();
@@ -108,4 +109,5 @@ public class CalendarService {
 
         return new DtoDayExerciseSummary(calendar.getDay(), exercises);
     }
+
 }
