@@ -21,6 +21,6 @@ public class Meal {
     @JoinColumn(name = "calendar_id")
     private Calendar calendar;
 
-    @OneToMany(mappedBy = "meal", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "meal", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<MealProduct> mealProducts = new ArrayList<>();
 }

@@ -90,9 +90,9 @@ public class UserController {
     public ResponseEntity<?> getCaloricRequisition() { return ResponseEntity.ok(appService.calculateCaloricRequisition());}
 
     @PostMapping("/addMealProduct")
-    public ResponseEntity<?> addMealProduct(@Valid @RequestBody AddMealProductRequest addMealProductRequest) {
-        mealProductService.addMealProduct(addMealProductRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<DtoMeal> addMealProduct(@Valid @RequestBody AddMealProductRequest request) {
+        DtoMeal updatedMeal = mealProductService.addMealProduct(request);
+        return ResponseEntity.ok(updatedMeal);
     }
 
     @PutMapping("/updateMealProduct")

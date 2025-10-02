@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface CalendarRepository extends JpaRepository<Calendar,Long> {
 
     Optional<Calendar> findCalendarByDay(LocalDate day);
+
 }

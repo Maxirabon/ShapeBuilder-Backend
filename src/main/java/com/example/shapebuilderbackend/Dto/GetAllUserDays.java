@@ -1,6 +1,6 @@
 package com.example.shapebuilderbackend.Dto;
 
-import com.example.shapebuilderbackend.Model.Calendar;
+import com.example.shapebuilderbackend.Model.Meal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -11,7 +11,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class GetAllUserDays {
-    Long dayId;
-    LocalDate day;
-    LocalDateTime modification_date;
+    private Long dayId;
+    private LocalDate day;
+    private LocalDateTime modificationDate;
+    private List<DtoGetDayMeals> meals;
+
 }

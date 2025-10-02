@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 @Transactional
 public class UserService {
@@ -177,7 +179,7 @@ public class UserService {
             return userRepository.findAll().stream()
                     .filter(u -> !u.getId().equals(user.getId()))
                     .map(u -> new GetAllUsersResponse(u.getId(), u.getFirstName(), u.getLastName(), u.getGender(), u.getAge(), u.getWeight(), u.getHeight(), u.getEmail(), u.getPassword(), u.getRole(), u.getActivity()))
-                    .collect(Collectors.toList());
+                    .collect(toList());
         }
         else{
             throw new ForbiddenException("Nie masz uprawnien by wyświetlic profile innych użytkownikow");
@@ -214,7 +216,24 @@ public class UserService {
                 .map(e -> new GetAllUserDays(
                         e.getId(),
                         e.getDay(),
-                        e.getModification_date()
+                        e.getModification_date(),
+                        e.getMeals().stream()
+                                .map(meal -> new DtoGetDayMeals(
+                                        meal.getId(),
+                                        meal.getDescription(),
+                                        meal.getMealProducts().stream()   // <-- dodaj produkty
+                                                .map(p -> new DtoMealProduct(
+                                                        p.getId(),
+                                                        p.getProduct().getName(),
+                                                        p.getProduct().getCalories(),
+                                                        p.getProduct().getProtein(),
+                                                        p.getProduct().getCarbs(),
+                                                        p.getProduct().getFat(),
+                                                        p.getAmount()
+                                                ))
+                                                .toList()
+                                ))
+                                .toList()
                 ))
                 .toList();
     }

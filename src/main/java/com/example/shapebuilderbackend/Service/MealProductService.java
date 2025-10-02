@@ -2,6 +2,7 @@ package com.example.shapebuilderbackend.Service;
 
 import com.example.shapebuilderbackend.Dto.AddMealProductRequest;
 import com.example.shapebuilderbackend.Dto.DeleteMealProductRequest;
+import com.example.shapebuilderbackend.Dto.DtoMeal;
 import com.example.shapebuilderbackend.Dto.UpdateMealProductRequest;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
 import com.example.shapebuilderbackend.Model.Meal;
@@ -28,7 +29,7 @@ public class MealProductService {
     private ProductRepository productRepository;
 
 
-    public void addMealProduct(AddMealProductRequest addMealProductRequest) {
+    public DtoMeal addMealProduct(AddMealProductRequest addMealProductRequest) {
         Meal meal = mealRepository.findById(addMealProductRequest.getMeal_id())
                 .orElseThrow(() -> new NotFoundException("Meal not found"));
 
@@ -40,6 +41,9 @@ public class MealProductService {
         mealProduct.setProduct(product);
         mealProduct.setAmount(addMealProductRequest.getAmount());
         mealProductRepository.save(mealProduct);
+        meal.setMealProducts(mealProductRepository.findByMealId(meal.getId()));
+
+        return new DtoMeal(meal);
     }
 
     public void updateMealProduct(UpdateMealProductRequest updateMealProductRequest) {
