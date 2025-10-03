@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -96,15 +98,31 @@ public class UserController {
     }
 
     @PutMapping("/updateMealProduct")
-    public ResponseEntity<?> updateMealProduct(@Valid @RequestBody UpdateMealProductRequest updateMealProductRequest) {
-        mealProductService.updateMealProduct(updateMealProductRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<DtoMealProduct> updateMealProduct(@Valid @RequestBody UpdateMealProductRequest updateMealProductRequest) {
+        MealProduct updated = mealProductService.updateMealProduct(updateMealProductRequest);
+        double ratio = updated.getAmount() / 100.0;
+
+        DtoMealProduct dto = new DtoMealProduct(
+                updated.getId(),
+                updated.getProduct().getId(),
+                updated.getProduct().getName(),
+                updated.getProduct().getCalories() * ratio,
+                updated.getProduct().getProtein() * ratio,
+                updated.getProduct().getCarbs() * ratio,
+                updated.getProduct().getFat() * ratio,
+                updated.getAmount()
+        );
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("/deleteMealProduct")
-    public ResponseEntity<?> deleteMealProduct(@RequestBody DeleteMealProductRequest deleteMealProductRequest) {
-        mealProductService.deleteMealProduct(deleteMealProductRequest);
-        return ResponseEntity.ok().body("Posiłek został usunięty.");
+    public ResponseEntity<Map<String, Object>> deleteMealProduct(@RequestParam Long id) {
+        mealProductService.deleteMealProduct(new DeleteMealProductRequest(id));
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", id);
+        response.put("message", "Posiłek został usunięty");
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/getProductSummary/{id}")

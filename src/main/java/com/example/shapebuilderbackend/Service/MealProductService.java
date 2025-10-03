@@ -4,6 +4,7 @@ import com.example.shapebuilderbackend.Dto.AddMealProductRequest;
 import com.example.shapebuilderbackend.Dto.DeleteMealProductRequest;
 import com.example.shapebuilderbackend.Dto.DtoMeal;
 import com.example.shapebuilderbackend.Dto.UpdateMealProductRequest;
+import com.example.shapebuilderbackend.Exception.ConflictException;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
 import com.example.shapebuilderbackend.Model.Meal;
 import com.example.shapebuilderbackend.Model.MealProduct;
@@ -11,10 +12,12 @@ import com.example.shapebuilderbackend.Model.Product;
 import com.example.shapebuilderbackend.Repository.MealProductRepository;
 import com.example.shapebuilderbackend.Repository.MealRepository;
 import com.example.shapebuilderbackend.Repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MealProductService {
@@ -36,6 +39,11 @@ public class MealProductService {
         Product product = productRepository.findById(addMealProductRequest.getProduct_id())
                 .orElseThrow(() -> new NotFoundException("Product not found"));
 
+        boolean exists = mealProductRepository.existsByMealIdAndProductId(meal.getId(), product.getId());
+        if (exists) {
+            throw new ConflictException("Produkt juz znajduje sie w posilku. Usun go lub zmodyfikuj!");
+        }
+
         MealProduct mealProduct = new MealProduct();
         mealProduct.setMeal(meal);
         mealProduct.setProduct(product);
@@ -46,21 +54,27 @@ public class MealProductService {
         return new DtoMeal(meal);
     }
 
-    public void updateMealProduct(UpdateMealProductRequest updateMealProductRequest) {
-        Product product = productRepository.findById(updateMealProductRequest.getProduct_id())
+    public MealProduct updateMealProduct(UpdateMealProductRequest req) {
+        Product product = productRepository.findById(req.getProduct_id())
                 .orElseThrow(() -> new NotFoundException("Product not found"));
 
-        MealProduct mealProduct = mealProductRepository.findById(updateMealProductRequest.getId())
+        MealProduct mealProduct = mealProductRepository.findById(req.getId())
                 .orElseThrow(() -> new NotFoundException("MealProduct not found"));
 
         mealProduct.setProduct(product);
-        mealProduct.setAmount(updateMealProductRequest.getAmount());
-        mealProductRepository.save(mealProduct);
-    }
+        mealProduct.setAmount(req.getAmount());
 
-    public void deleteMealProduct(DeleteMealProductRequest deleteMealProductRequest) {
-        MealProduct mealProduct = mealProductRepository.findById(deleteMealProductRequest.getId())
+        return mealProductRepository.save(mealProduct);
+    }
+    @Transactional
+    public void deleteMealProduct(DeleteMealProductRequest req) {
+        MealProduct mp = mealProductRepository.findById(req.getId())
                 .orElseThrow(() -> new NotFoundException("MealProduct not found"));
-        mealProductRepository.delete(mealProduct);
+
+        Meal meal = mp.getMeal();
+        if (meal != null) {
+            // usuwamy z kolekcji
+            meal.getMealProducts().remove(mp);
+        }
     }
 }

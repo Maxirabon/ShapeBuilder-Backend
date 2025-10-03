@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class DtoMealProduct {
     private Long id;
+    private Long productId;
     private String name;
     private double calories;
     private double protein;
@@ -15,6 +16,7 @@ public class DtoMealProduct {
 
     public DtoMealProduct(MealProduct mp) {
         this.id = mp.getId();
+        this.productId = mp.getProduct().getId();
         this.name = mp.getProduct().getName();
         this.calories = mp.getProduct().getCalories();
         this.protein = mp.getProduct().getProtein();
@@ -23,8 +25,9 @@ public class DtoMealProduct {
         this.amount = mp.getAmount();
     }
 
-    public DtoMealProduct(Long id, String name, double calories, double protein, double carbs, double fat, double amount) {
+    public DtoMealProduct(Long id, Long productId,  String name, double calories, double protein, double carbs, double fat, double amount) {
         this.id = id;
+        this.productId = productId;
         this.name = name;
         this.calories = calories;
         this.protein = protein;

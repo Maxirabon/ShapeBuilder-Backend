@@ -221,16 +221,20 @@ public class UserService {
                                 .map(meal -> new DtoGetDayMeals(
                                         meal.getId(),
                                         meal.getDescription(),
-                                        meal.getMealProducts().stream()   // <-- dodaj produkty
-                                                .map(p -> new DtoMealProduct(
-                                                        p.getId(),
-                                                        p.getProduct().getName(),
-                                                        p.getProduct().getCalories(),
-                                                        p.getProduct().getProtein(),
-                                                        p.getProduct().getCarbs(),
-                                                        p.getProduct().getFat(),
-                                                        p.getAmount()
-                                                ))
+                                        meal.getMealProducts().stream()
+                                                .map(p -> {
+                                                    double ratio = p.getAmount() / 100.0;
+                                                    return new DtoMealProduct(
+                                                            p.getId(),
+                                                            p.getProduct().getId(),
+                                                            p.getProduct().getName(),
+                                                            p.getProduct().getCalories() * ratio,
+                                                            p.getProduct().getProtein() * ratio,
+                                                            p.getProduct().getCarbs() * ratio,
+                                                            p.getProduct().getFat() * ratio,
+                                                            p.getAmount()
+                                                    );
+                                                })
                                                 .toList()
                                 ))
                                 .toList()
