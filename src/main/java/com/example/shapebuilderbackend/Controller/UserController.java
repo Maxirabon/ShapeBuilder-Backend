@@ -150,9 +150,9 @@ public class UserController {
     }
 
     @PostMapping("/addUserProduct")
-    public ResponseEntity<?> addUserProduct(@Valid @RequestBody AddUserProductRequest addUserProductRequest) {
-        userService.addUserProduct(addUserProductRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<AddUserProductRequest> addUserProduct(@Valid @RequestBody AddUserProductRequest addUserProductRequest) {
+        AddUserProductRequest newUserProduct = userService.addUserProduct(addUserProductRequest);
+        return ResponseEntity.ok(newUserProduct);
     }
 
     @GetMapping("/getUserProducts")

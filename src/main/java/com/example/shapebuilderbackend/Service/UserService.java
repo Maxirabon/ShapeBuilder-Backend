@@ -6,7 +6,6 @@ import com.example.shapebuilderbackend.Exception.ForbiddenException;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
 import com.example.shapebuilderbackend.Exception.UnauthorizedException;
 import com.example.shapebuilderbackend.Model.Activity.Activity;
-import com.example.shapebuilderbackend.Model.MealProduct;
 import com.example.shapebuilderbackend.Model.Product;
 import com.example.shapebuilderbackend.Model.Role.Role;
 import com.example.shapebuilderbackend.Model.User;
@@ -15,15 +14,12 @@ import com.example.shapebuilderbackend.Repository.UserRepository;
 import com.example.shapebuilderbackend.Security.JwtService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -120,7 +116,7 @@ public class UserService {
         };
     }
 
-    public void addUserProduct(AddUserProductRequest addUserProductRequest) {
+    public AddUserProductRequest addUserProduct(AddUserProductRequest addUserProductRequest) {
         User user = getCurrentUser();
         Product product = new Product();
         product.setName(addUserProductRequest.getName());
@@ -130,12 +126,34 @@ public class UserService {
         product.setCalories(addUserProductRequest.getCalories());
         product.setUser(user);
         product.setCustom(true);
-        productRepository.save(product);
+
+        Product saved = productRepository.save(product);
+
+        return new AddUserProductRequest(
+                saved.getId(),
+                saved.getName(),
+                saved.getProtein(),
+                saved.getCarbs(),
+                saved.getFat(),
+                saved.getCalories(),
+                saved.isCustom()
+        );
     }
 
     public List<GetAllUserProducts> getAllUserProducts() {
         User user = getCurrentUser();
-        return userRepository.findAllByUserId(user.getId());
+        List<Product> products = productRepository.findAllByUserId(user.getId());
+
+        return products.stream()
+                .map(p -> new GetAllUserProducts(
+                        p.getId(),
+                        p.getName(),
+                        p.getProtein(),
+                        p.getFat(),
+                        p.getCarbs(),
+                        p.getCalories()
+                ))
+                .collect(Collectors.toList());
     }
 
     public void updateUserProduct(UpdateUserProductRequest updateUserProductRequest) {

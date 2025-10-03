@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     @Query("""
         select new com.example.shapebuilderbackend.Dto.GetAllUserProducts(
-            p.name, p.protein, p.fat, p.carbs, p.calories
+            p.id, p.name, p.protein, p.fat, p.carbs, p.calories
         )
         from Product p
         where p.user.Id = :userId
