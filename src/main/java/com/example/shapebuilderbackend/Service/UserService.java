@@ -156,7 +156,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public void updateUserProduct(UpdateUserProductRequest updateUserProductRequest) {
+    public UpdateUserProductRequest updateUserProduct(UpdateUserProductRequest updateUserProductRequest) {
         User user = getCurrentUser();
 
         Product product = productRepository.findById(updateUserProductRequest.getId())
@@ -171,24 +171,30 @@ public class UserService {
         product.setCarbs(updateUserProductRequest.getCarbs());
         product.setFat(updateUserProductRequest.getFat());
         product.setCalories(updateUserProductRequest.getCalories());
-
         productRepository.save(product);
+
+        return new UpdateUserProductRequest(
+                product.getId(),
+                product.getName(),
+                product.getProtein(),
+                product.getCarbs(),
+                product.getFat(),
+                product.getCalories()
+        );
+
     }
 
-    public void deleteUserProduct(DeleteUserProductRequest deleteUserProductRequest) {
+    public void deleteUserProduct(Long productId) {
         Long userId = getCurrentUser().getId();
-        User user = userRepository.findByIdWithProducts(userId)
-                .orElseThrow(() -> new NotFoundException("Nie znaleziono użytkownika"));
 
-        Product product = productRepository.findById(deleteUserProductRequest.getId())
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono produktu"));
 
         if (!product.getUser().getId().equals(userId)) {
             throw new SecurityException("Nie masz dostępu do tego produktu");
         }
 
-        user.getProducts().removeIf(p -> p.getId().equals(product.getId()));
-        userRepository.save(user);
+        productRepository.delete(product);
     }
 
     public List<GetAllUsersResponse> getAllUsers() {

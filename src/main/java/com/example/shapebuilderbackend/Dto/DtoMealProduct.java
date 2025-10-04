@@ -18,11 +18,13 @@ public class DtoMealProduct {
         this.id = mp.getId();
         this.productId = mp.getProduct().getId();
         this.name = mp.getProduct().getName();
-        this.calories = mp.getProduct().getCalories();
-        this.protein = mp.getProduct().getProtein();
-        this.carbs = mp.getProduct().getCarbs();
-        this.fat = mp.getProduct().getFat();
         this.amount = mp.getAmount();
+
+        double ratio = mp.getAmount() / 100.0;
+        this.calories = mp.getProduct().getCalories() * ratio;
+        this.protein = mp.getProduct().getProtein() * ratio;
+        this.carbs = mp.getProduct().getCarbs() * ratio;
+        this.fat = mp.getProduct().getFat() * ratio;
     }
 
     public DtoMealProduct(Long id, Long productId,  String name, double calories, double protein, double carbs, double fat, double amount) {

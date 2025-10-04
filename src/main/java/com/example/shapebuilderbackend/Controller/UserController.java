@@ -161,15 +161,15 @@ public class UserController {
     }
 
     @PutMapping("/updateUserProduct")
-    public ResponseEntity<?> updateUserProduct(@Valid @RequestBody UpdateUserProductRequest updateUserProductRequest) {
-        userService.updateUserProduct(updateUserProductRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<UpdateUserProductRequest> updateUserProduct(@Valid @RequestBody UpdateUserProductRequest updateUserProductRequest) {
+        UpdateUserProductRequest updated = userService.updateUserProduct(updateUserProductRequest);
+        return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("/deleteUserProduct")
-    public ResponseEntity<?> deleteUserProduct(@RequestBody DeleteUserProductRequest deleteUserProductRequest) {
-        userService.deleteUserProduct(deleteUserProductRequest);
-        return ResponseEntity.ok().body("Posiłek został usunięty.");
+    @DeleteMapping("/deleteUserProduct/{id}")
+    public ResponseEntity<?> deleteUserProduct(@PathVariable Long id) {
+        userService.deleteUserProduct(id);
+        return ResponseEntity.ok().body("Produkt został usunięty.");
     }
 
     @GetMapping("/getUserDays")
