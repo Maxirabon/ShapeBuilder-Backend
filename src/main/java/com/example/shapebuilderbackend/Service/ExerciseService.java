@@ -46,7 +46,7 @@ public class ExerciseService {
                 .anyMatch(e -> e.getExerciseTemplate().getId().equals(template.getId()));
 
         if (exists) {
-            throw new ConflictException("Ćwiczenie tego typu już istnieje dla tego dnia.");
+            throw new ConflictException("Ćwiczenie już znajduje się tego dnia. Usuń je lub zmodyfikuj!");
         }
 
         Exercise exercise = new Exercise();
@@ -69,14 +69,15 @@ public class ExerciseService {
         return dto;
     }
 
-    public void updateExercise(UpdateExerciseRequest updateExerciseRequest) {
+    public Exercise updateExercise(UpdateExerciseRequest updateExerciseRequest) {
         Exercise updatedExercise = exerciseRepository.findById(updateExerciseRequest.getId())
                 .orElseThrow(() -> new NotFoundException("Nie ma ćwiczenia o takim ID"));
 
         updatedExercise.setSets(updateExerciseRequest.getSets());
         updatedExercise.setRepetitions(updateExerciseRequest.getRepetitions());
         updatedExercise.setWeight(updateExerciseRequest.getWeight());
-        exerciseRepository.save(updatedExercise);
+
+        return exerciseRepository.save(updatedExercise);
     }
 
     public void deleteExercise(DeleteExerciseRequest deleteExerciseRequest) {

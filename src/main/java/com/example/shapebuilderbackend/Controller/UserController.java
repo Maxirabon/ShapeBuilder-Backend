@@ -2,6 +2,7 @@ package com.example.shapebuilderbackend.Controller;
 
 import com.example.shapebuilderbackend.Dto.*;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
+import com.example.shapebuilderbackend.Model.Exercise;
 import com.example.shapebuilderbackend.Model.Meal;
 import com.example.shapebuilderbackend.Model.MealProduct;
 import com.example.shapebuilderbackend.Repository.MealProductRepository;
@@ -72,9 +73,9 @@ public class UserController {
     }
 
     @PutMapping("/updateExercise")
-    public ResponseEntity<?> updateUserExercise(@Valid @RequestBody UpdateExerciseRequest updateExerciseRequest) {
-        exerciseService.updateExercise(updateExerciseRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Exercise> updateUserExercise(@Valid @RequestBody UpdateExerciseRequest updateExerciseRequest) {
+        Exercise updated = exerciseService.updateExercise(updateExerciseRequest);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/deleteExercise")
