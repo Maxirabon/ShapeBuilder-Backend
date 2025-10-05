@@ -56,16 +56,19 @@ public class ExerciseService {
         exercise.setWeight(addExerciseRequest.getWeight());
         exercise.setCalendar(day);
 
-        day.getExercises().add(exercise);
+        Exercise savedExercise = exerciseRepository.save(exercise);
+
+        day.getExercises().add(savedExercise);
         calendarRepository.save(day);
 
         DtoAddExerciseResponse dto = new DtoAddExerciseResponse();
-        dto.setId(exercise.getId());
+        dto.setId(savedExercise.getId());
         dto.setExerciseTemplateId(template.getId());
         dto.setName(template.getName());
-        dto.setSets(exercise.getSets());
-        dto.setRepetitions(exercise.getRepetitions());
-        dto.setWeight(exercise.getWeight());
+        dto.setSets(savedExercise.getSets());
+        dto.setRepetitions(savedExercise.getRepetitions());
+        dto.setWeight(savedExercise.getWeight());
+
         return dto;
     }
 
