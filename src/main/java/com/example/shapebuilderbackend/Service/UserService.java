@@ -261,6 +261,16 @@ public class UserService {
                                                 })
                                                 .toList()
                                 ))
+                                .toList(),
+                        e.getExercises().stream()
+                                .map(ex -> new DtoGetDayExercises(
+                                        ex.getId(),
+                                        ex.getExerciseTemplate().getId(),
+                                        ex.getExerciseTemplate().getName(),
+                                        ex.getSets(),
+                                        ex.getRepetitions(),
+                                        ex.getWeight()
+                                ))
                                 .toList()
                 ))
                 .toList();

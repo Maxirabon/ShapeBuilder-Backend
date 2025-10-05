@@ -66,9 +66,9 @@ public class UserController {
     }
 
     @PostMapping("/addExercise")
-    public ResponseEntity<?> addUserExerciseToDay(@Valid @RequestBody AddExerciseRequest addExerciseRequest) {
-        exerciseService.addExercise(addExerciseRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<DtoAddExerciseResponse> addUserExerciseToDay(@Valid @RequestBody AddExerciseRequest addExerciseRequest) {
+        DtoAddExerciseResponse newExercise = exerciseService.addExercise(addExerciseRequest);
+        return ResponseEntity.ok(newExercise);
     }
 
     @PutMapping("/updateExercise")

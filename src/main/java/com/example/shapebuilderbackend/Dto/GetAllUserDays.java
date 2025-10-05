@@ -15,5 +15,5 @@ public class GetAllUserDays {
     private LocalDate day;
     private LocalDateTime modificationDate;
     private List<DtoGetDayMeals> meals;
-
+    private List<DtoGetDayExercises> exercises;
 }

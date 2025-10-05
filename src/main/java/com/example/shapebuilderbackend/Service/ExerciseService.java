@@ -2,6 +2,7 @@ package com.example.shapebuilderbackend.Service;
 
 import com.example.shapebuilderbackend.Dto.AddExerciseRequest;
 import com.example.shapebuilderbackend.Dto.DeleteExerciseRequest;
+import com.example.shapebuilderbackend.Dto.DtoAddExerciseResponse;
 import com.example.shapebuilderbackend.Dto.UpdateExerciseRequest;
 import com.example.shapebuilderbackend.Exception.ConflictException;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
@@ -34,7 +35,7 @@ public class ExerciseService {
         this.exerciseRepository = exerciseRepository;
     }
 
-    public void addExercise(AddExerciseRequest addExerciseRequest) {
+    public DtoAddExerciseResponse addExercise(AddExerciseRequest addExerciseRequest) {
         Calendar day = calendarRepository.findCalendarByDay(addExerciseRequest.getDay())
                 .orElseThrow(() -> new NotFoundException("Nieprawidłowy dzień"));
 
@@ -57,6 +58,15 @@ public class ExerciseService {
 
         day.getExercises().add(exercise);
         calendarRepository.save(day);
+
+        DtoAddExerciseResponse dto = new DtoAddExerciseResponse();
+        dto.setId(exercise.getId());
+        dto.setExerciseTemplateId(template.getId());
+        dto.setName(template.getName());
+        dto.setSets(exercise.getSets());
+        dto.setRepetitions(exercise.getRepetitions());
+        dto.setWeight(exercise.getWeight());
+        return dto;
     }
 
     public void updateExercise(UpdateExerciseRequest updateExerciseRequest) {

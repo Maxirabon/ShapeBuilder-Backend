@@ -1,6 +1,6 @@
 Martwy ciąg
 Przysiad ze sztangą
-Przysiad ze sztangą na klatkę
+Przysiad ze sztangą (front squad)
 Wyciskanie na ławce poziomej ze sztangą
 Wyciskanie na ławce poziomej z hantlami
 Wyciskanie na ławce skośnej ze sztangą
