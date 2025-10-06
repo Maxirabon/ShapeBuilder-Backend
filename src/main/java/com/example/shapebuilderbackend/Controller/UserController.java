@@ -49,16 +49,26 @@ public class UserController {
     @Autowired
     private CalendarService calendarService;
 
+    @GetMapping("/getUserInfo")
+    public ResponseEntity<DtoGetUserInfo> getUserInfo(){
+        DtoGetUserInfo info = userService.getUserInfo();
+        return ResponseEntity.ok(info);
+    }
+
     @PutMapping("/updateProfile")
     public ResponseEntity<?> updateUserProfile(@RequestBody UpdateProfileRequest updateProfileRequest) {
         userService.updateProfile(updateProfileRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(Map.of("message", "Profil zaktualizowany"));
     }
 
     @PutMapping("/changePassword")
     public ResponseEntity<?> changeUserPassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
-        userService.changePassword(changePasswordRequest);
-        return ResponseEntity.ok().build();
+        try {
+            userService.changePassword(changePasswordRequest);
+            return ResponseEntity.ok(Map.of("message", "Hasło zostało zmienione."));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/getAllExerciseTemplates")

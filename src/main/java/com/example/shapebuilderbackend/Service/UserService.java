@@ -90,6 +90,11 @@ public class UserService {
 
     public void updateProfile(UpdateProfileRequest updateProfileRequest) {
         User user = getCurrentUser();
+        if (updateProfileRequest.getAge() <= 0 ||
+                updateProfileRequest.getHeight() <= 0 ||
+                updateProfileRequest.getWeight() <= 0) {
+            throw new ForbiddenException("Wiek, wzrost i waga muszą być większe od zera.");
+        }
         user.setAge(updateProfileRequest.getAge());
         user.setHeight(updateProfileRequest.getHeight());
         user.setWeight(updateProfileRequest.getWeight());
@@ -99,8 +104,30 @@ public class UserService {
 
     public void changePassword(ChangePasswordRequest changePasswordRequest) {
         User user = getCurrentUser();
+        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
+            throw new RuntimeException("Niepoprawne stare hasło.");
+        }
+        if (passwordEncoder.matches(changePasswordRequest.getNewPassword(), user.getPassword())) {
+            throw new RuntimeException("Nowe hasło nie może być takie samo jak stare.");
+        }
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userRepository.save(user);
+    }
+
+    public DtoGetUserInfo getUserInfo(){
+        User user = getCurrentUser();
+
+        return new DtoGetUserInfo(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getGender(),
+                user.getAge(),
+                user.getHeight(),
+                user.getWeight(),
+                user.getActivity().toString()
+        );
+
     }
 
     public double getUserPAL() {
