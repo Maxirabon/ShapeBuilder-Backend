@@ -14,6 +14,9 @@ public class AddExerciseRequest {
     @NotNull
     private Long exerciseTemplateId;
 
+    @NotNull
+    private Long userId;
+
     @Min(1)
     private int sets;
 

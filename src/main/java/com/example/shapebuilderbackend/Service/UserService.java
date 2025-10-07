@@ -73,8 +73,8 @@ public class UserService {
         user.setWeight(registerRequest.getWeight());
         user.setHeight(registerRequest.getHeight());
         user.setActivity(activity);
+        userRepository.save(user);
         calendarService.generateDaysForUser(user);
-
         userRepository.save(user);
     }
 

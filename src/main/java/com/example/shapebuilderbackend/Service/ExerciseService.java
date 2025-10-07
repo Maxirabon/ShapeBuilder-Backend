@@ -9,12 +9,16 @@ import com.example.shapebuilderbackend.Exception.NotFoundException;
 import com.example.shapebuilderbackend.Model.Calendar;
 import com.example.shapebuilderbackend.Model.Exercise;
 import com.example.shapebuilderbackend.Model.ExerciseTemplate;
+import com.example.shapebuilderbackend.Model.User;
 import com.example.shapebuilderbackend.Repository.CalendarRepository;
 import com.example.shapebuilderbackend.Repository.ExerciseRepository;
 import com.example.shapebuilderbackend.Repository.ExerciseTemplateRepository;
+import com.example.shapebuilderbackend.Repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -29,6 +33,9 @@ public class ExerciseService {
     @Autowired
     private ExerciseTemplateRepository exerciseTemplateRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
     public ExerciseService(CalendarRepository calendarRepository, ExerciseTemplateRepository exerciseTemplateRepository, ExerciseRepository exerciseRepository) {
         this.calendarRepository = calendarRepository;
         this.exerciseTemplateRepository = exerciseTemplateRepository;
@@ -36,8 +43,11 @@ public class ExerciseService {
     }
 
     public DtoAddExerciseResponse addExercise(AddExerciseRequest addExerciseRequest) {
-        Calendar day = calendarRepository.findCalendarByDay(addExerciseRequest.getDay())
-                .orElseThrow(() -> new NotFoundException("Nieprawidłowy dzień"));
+        User currentUser = userRepository.findById(addExerciseRequest.getUserId())
+                .orElseThrow(() -> new NotFoundException("Nie znaleziono użytkownika"));
+
+        Calendar day = calendarRepository.findByDayAndUser(addExerciseRequest.getDay(), currentUser)
+                .orElseThrow(() -> new NotFoundException("Nieprawidłowy dzień dla użytkownika"));
 
         ExerciseTemplate template = exerciseTemplateRepository.findById(addExerciseRequest.getExerciseTemplateId())
                 .orElseThrow(() -> new NotFoundException("Nieprawidłowy szablon ćwiczenia"));
