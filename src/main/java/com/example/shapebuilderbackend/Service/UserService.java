@@ -6,9 +6,11 @@ import com.example.shapebuilderbackend.Exception.ForbiddenException;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
 import com.example.shapebuilderbackend.Exception.UnauthorizedException;
 import com.example.shapebuilderbackend.Model.Activity.Activity;
+import com.example.shapebuilderbackend.Model.Calendar;
 import com.example.shapebuilderbackend.Model.Product;
 import com.example.shapebuilderbackend.Model.Role.Role;
 import com.example.shapebuilderbackend.Model.User;
+import com.example.shapebuilderbackend.Repository.CalendarRepository;
 import com.example.shapebuilderbackend.Repository.ProductRepository;
 import com.example.shapebuilderbackend.Repository.UserRepository;
 import com.example.shapebuilderbackend.Security.JwtService;
@@ -19,6 +21,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +46,9 @@ public class UserService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CalendarRepository calendarRepository;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, CalendarService calendarService, ProductRepository productRepository) {
         this.userRepository = userRepository;

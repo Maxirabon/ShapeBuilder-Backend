@@ -1,6 +1,7 @@
 package com.example.shapebuilderbackend.Controller;
 
 import com.example.shapebuilderbackend.Dto.*;
+import com.example.shapebuilderbackend.Exception.BadRequestException;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
 import com.example.shapebuilderbackend.Model.Exercise;
 import com.example.shapebuilderbackend.Model.Meal;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,9 +157,43 @@ public class UserController {
         return calendarService.getDaySummary(id);
     }
 
+    @GetMapping("/getWeekSummary/{userId}")
+    public DtoWeekSummary getWeekSummary(@PathVariable Long userId) {
+        return calendarService.getWeekSummary(userId);
+    }
+
+    @GetMapping("/getMonthSummary/{userId}/{year}/{month}")
+    public DtoMonthSummary getMonthSummary(@PathVariable Long userId, @PathVariable int year, @PathVariable int month) {
+        if (year < 2025 || year > LocalDate.now().getYear()) {
+            throw new BadRequestException("Niepoprawny rok");
+        }
+        if (month < 1 || month > 12) {
+            throw new BadRequestException("Niepoprawny miesiąc");
+        }
+        return calendarService.getMonthSummary(userId, year, month);
+    }
+
     @GetMapping("/getDayExerciseSummary/{id}")
     public DtoDayExerciseSummary getDayExerciseSummary(@PathVariable Long id) {
         return calendarService.getDayExerciseSummary(id);
+    }
+
+    @GetMapping("/getWeekExerciseSummary/{userId}")
+    public ResponseEntity<DtoPeriodExerciseSummary> getWeekExerciseSummary(@PathVariable Long userId) {
+        DtoPeriodExerciseSummary summary = calendarService.getWeekExerciseSummary(userId);
+        return ResponseEntity.ok(summary);
+    }
+
+    @GetMapping("/getMonthExerciseSummary/{userId}/{year}/{month}")
+    public ResponseEntity<DtoPeriodExerciseSummary> getMonthExerciseSummary(@PathVariable Long userId, @PathVariable int year, @PathVariable int month) {
+        if (year < 2025 || year > LocalDate.now().getYear()) {
+            throw new BadRequestException("Niepoprawny rok");
+        }
+        if (month < 1 || month > 12) {
+            throw new BadRequestException("Niepoprawny miesiąc");
+        }
+        DtoPeriodExerciseSummary summary = calendarService.getMonthExerciseSummary(userId, year, month);
+        return ResponseEntity.ok(summary);
     }
 
     @PostMapping("/addUserProduct")
