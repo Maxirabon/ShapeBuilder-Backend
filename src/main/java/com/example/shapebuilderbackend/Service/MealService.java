@@ -36,10 +36,10 @@ public class MealService {
         return new DtoMealSummary(
                 meal.getDescription(),
                 productSummaries,
-                round(protein),
-                round(fat),
-                round(carbs),
-                round(calories)
+                protein,
+                fat,
+                carbs,
+                calories
         );
     }
 }

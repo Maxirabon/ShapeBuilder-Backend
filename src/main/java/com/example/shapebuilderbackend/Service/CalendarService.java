@@ -82,10 +82,10 @@ public class CalendarService {
         return new DtoDaySummary(
                 calendar.getDay(),
                 mealSummaries,
-                Math.round(protein),
-                Math.round(fat),
-                Math.round(carbs),
-                Math.round(calories)
+                protein,
+                fat,
+                carbs,
+                calories
         );
     }
 

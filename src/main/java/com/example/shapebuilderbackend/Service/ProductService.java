@@ -47,10 +47,10 @@ public class ProductService {
         return new DtoProductSummary(
                 p.getName(),
                 amount,
-                Math.round(p.getProtein() * newAmount),
-                Math.round(p.getFat() * newAmount),
-                Math.round(p.getCarbs() * newAmount),
-                Math.round(p.getCalories() * newAmount)
+                p.getProtein() * newAmount,
+                p.getFat() * newAmount,
+                p.getCarbs() * newAmount,
+                p.getCalories() * newAmount
         );
     }
 }
