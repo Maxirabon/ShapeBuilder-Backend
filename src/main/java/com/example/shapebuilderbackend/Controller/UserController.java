@@ -158,12 +158,14 @@ public class UserController {
     }
 
     @GetMapping("/getWeekSummary/{userId}")
-    public DtoWeekSummary getWeekSummary(@PathVariable Long userId) {
-        return calendarService.getWeekSummary(userId);
+    public DtoWeekSummary getWeekSummary(@PathVariable Long userId, @RequestParam(required = false) String startOfWeek, @RequestParam(required = false) String endOfWeek) {
+        LocalDate start = (startOfWeek != null) ? LocalDate.parse(startOfWeek) : null;
+        LocalDate end = (endOfWeek != null) ? LocalDate.parse(endOfWeek) : null;
+        return calendarService.getWeekSummary(userId, start, end);
     }
 
     @GetMapping("/getMonthSummary/{userId}/{year}/{month}")
-    public DtoMonthSummary getMonthSummary(@PathVariable Long userId, @PathVariable int year, @PathVariable int month) {
+    public DtoMonthSummary getMonthSummary(@PathVariable Long userId, @PathVariable(required = false) Integer year, @PathVariable(required = false) Integer month) {
         if (year < 2025 || year > LocalDate.now().getYear()) {
             throw new BadRequestException("Niepoprawny rok");
         }

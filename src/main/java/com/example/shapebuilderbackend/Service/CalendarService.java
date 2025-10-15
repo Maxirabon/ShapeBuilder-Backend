@@ -104,48 +104,63 @@ public class CalendarService {
         return daySummary;
     }
 
-    public DtoWeekSummary getWeekSummary(Long userId) {
+    public DtoWeekSummary getWeekSummary(Long userId, LocalDate startOfWeek, LocalDate endOfWeek) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono użytkownika o podanym id"));
-        LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
-        LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
-        List<Calendar> calendars = calendarRepository.findByUserIdAndDayBetween(user.getId(), startOfWeek, endOfWeek);
-        NutritionSummaryAggregate summary = calculateNutritionSummary(calendars);
+        LocalDate start;
+        LocalDate end;
 
+        if (startOfWeek != null && endOfWeek != null) {
+            start = startOfWeek;
+            end = endOfWeek;
+        } else {
+            LocalDate today = LocalDate.now();
+            start = today.with(DayOfWeek.MONDAY);
+            end = today.with(DayOfWeek.SUNDAY);
+        }
+
+        List<Calendar> calendars = calendarRepository.findByUserIdAndDayBetween(user.getId(), start, end);
+        NutritionSummaryAggregate summary = calculateNutritionSummary(calendars);
         List<DtoChartPointFood> chartData = convertToChartData(summary.daySummaries());
 
         return new DtoWeekSummary(
-                startOfWeek,
-                endOfWeek,
+                start,
+                end,
                 summary.daySummaries(),
-                Math.round(summary.avgCalories()),
-                Math.round(summary.avgProtein()),
-                Math.round(summary.avgCarbs()),
-                Math.round(summary.avgFat()),
+                summary.avgCalories(),
+                summary.avgProtein(),
+                summary.avgCarbs(),
+                summary.avgFat(),
                 chartData
         );
     }
 
-    public DtoMonthSummary getMonthSummary(Long userId, int year, int month) {
+    public DtoMonthSummary getMonthSummary(Long userId, Integer year, Integer month) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono użytkownika o podanym id"));
-        LocalDate startOfMonth = LocalDate.of(year, month, 1);
-        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+        LocalDate startOfMonth;
+        LocalDate endOfMonth;
+
+        if (year != null && month != null) {
+            startOfMonth = LocalDate.of(year, month, 1);
+        } else {
+            LocalDate today = LocalDate.now();
+            startOfMonth = LocalDate.of(today.getYear(), today.getMonthValue(), 1);
+        }
+        endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
 
         List<Calendar> calendars = calendarRepository.findByUserIdAndDayBetween(user.getId(), startOfMonth, endOfMonth);
         NutritionSummaryAggregate summary = calculateNutritionSummary(calendars);
-
         List<DtoChartPointFood> chartData = convertToChartData(summary.daySummaries());
 
         return new DtoMonthSummary(
-                year,
-                month,
+                startOfMonth.getYear(),
+                startOfMonth.getMonthValue(),
                 summary.daySummaries(),
-                Math.round(summary.avgCalories()),
-                Math.round(summary.avgProtein()),
-                Math.round(summary.avgCarbs()),
-                Math.round(summary.avgFat()),
+                summary.avgCalories(),
+                summary.avgProtein(),
+                summary.avgCarbs(),
+                summary.avgFat(),
                 chartData
         );
     }
