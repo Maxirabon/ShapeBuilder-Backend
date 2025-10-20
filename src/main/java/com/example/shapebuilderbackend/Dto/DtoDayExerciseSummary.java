@@ -13,5 +13,5 @@ public class DtoDayExerciseSummary {
     private List<DtoExerciseSummary> exercises;
 
     private double totalVolume;
-    private double avgWeight;
+    private double avgVolume;
 }

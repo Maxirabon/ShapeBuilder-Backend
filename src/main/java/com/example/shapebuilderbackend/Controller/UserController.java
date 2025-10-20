@@ -181,8 +181,11 @@ public class UserController {
     }
 
     @GetMapping("/getWeekExerciseSummary/{userId}")
-    public ResponseEntity<DtoPeriodExerciseSummary> getWeekExerciseSummary(@PathVariable Long userId) {
-        DtoPeriodExerciseSummary summary = calendarService.getWeekExerciseSummary(userId);
+    public ResponseEntity<DtoPeriodExerciseSummary> getWeekExerciseSummary(@PathVariable Long userId, @RequestParam(required = false) String startOfWeek, @RequestParam(required = false) String endOfWeek) {
+        LocalDate start = (startOfWeek != null) ? LocalDate.parse(startOfWeek) : null;
+        LocalDate end = (endOfWeek != null) ? LocalDate.parse(endOfWeek) : null;
+
+        DtoPeriodExerciseSummary summary = calendarService.getWeekExerciseSummary(userId, start, end);
         return ResponseEntity.ok(summary);
     }
 

@@ -49,7 +49,6 @@ public class CalendarService {
             day.setUser(user);
             List<Meal> meals = createDefaultMealsForDay(day);
             day.setMeals(meals);
-
             newDays.add(day);
         }
     }
@@ -197,38 +196,53 @@ public class CalendarService {
 
         return calculateDayExerciseSummary(calendar);
     }
-    public DtoPeriodExerciseSummary getWeekExerciseSummary(Long userId) {
+    public DtoPeriodExerciseSummary getWeekExerciseSummary(Long userId, LocalDate startOfWeek, LocalDate endOfWeek) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono użytkownika o podanym id"));
-        LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
-        LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
+        LocalDate start;
+        LocalDate end;
 
-        List<DtoDayExerciseSummary> daySummaries = getExerciseSummaryForPeriod(user.getId(), startOfWeek, endOfWeek);
+        if (startOfWeek != null && endOfWeek != null) {
+            start = startOfWeek;
+            end = endOfWeek;
+        } else {
+            LocalDate today = LocalDate.now();
+            start = today.with(DayOfWeek.MONDAY);
+            end = today.with(DayOfWeek.SUNDAY);
+        }
 
+        List<DtoDayExerciseSummary> daySummaries = getExerciseSummaryForPeriod(user.getId(), start, end);
         double totalVolume = daySummaries.stream().mapToDouble(DtoDayExerciseSummary::getTotalVolume).sum();
         double avgVolume = daySummaries.isEmpty() ? 0 : totalVolume / daySummaries.size();
 
         List<DtoChartPointExercise> chartData = daySummaries.stream()
-                .map(d -> new DtoChartPointExercise(d.getDate(), d.getTotalVolume(), d.getAvgWeight()))
+                .map(d -> new DtoChartPointExercise(d.getDate(), d.getTotalVolume(), d.getAvgVolume()))
                 .toList();
 
-        return new DtoPeriodExerciseSummary(startOfWeek, endOfWeek, daySummaries, avgVolume, totalVolume, chartData);
+        return new DtoPeriodExerciseSummary(start, end, daySummaries, avgVolume, totalVolume, chartData);
     }
 
-    public DtoPeriodExerciseSummary getMonthExerciseSummary(Long userId, int year, int month) {
+    public DtoPeriodExerciseSummary getMonthExerciseSummary(Long userId, Integer year, Integer month) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono użytkownika o podanym id"));
-        LocalDate startOfMonth = LocalDate.of(year, month, 1);
-        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+        LocalDate startOfMonth;
+        LocalDate endOfMonth;
+
+        if (year != null && month != null) {
+            startOfMonth = LocalDate.of(year, month, 1);
+        } else {
+            LocalDate today = LocalDate.now();
+            startOfMonth = LocalDate.of(today.getYear(), today.getMonthValue(), 1);
+        }
+
+        endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
 
         List<DtoDayExerciseSummary> daySummaries = getExerciseSummaryForPeriod(user.getId(), startOfMonth, endOfMonth);
-
         double totalVolume = daySummaries.stream().mapToDouble(DtoDayExerciseSummary::getTotalVolume).sum();
         double avgVolume = daySummaries.isEmpty() ? 0 : totalVolume / daySummaries.size();
 
         List<DtoChartPointExercise> chartData = daySummaries.stream()
-                .map(d -> new DtoChartPointExercise(d.getDate(), d.getTotalVolume(), d.getAvgWeight()))
+                .map(d -> new DtoChartPointExercise(d.getDate(), d.getTotalVolume(), d.getAvgVolume()))
                 .toList();
 
         return new DtoPeriodExerciseSummary(startOfMonth, endOfMonth, daySummaries, avgVolume, totalVolume, chartData);
