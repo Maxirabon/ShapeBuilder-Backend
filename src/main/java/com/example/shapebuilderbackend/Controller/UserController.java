@@ -25,25 +25,18 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private ExerciseService exerciseService;
-
     @Autowired
     private ExerciseTemplateService exerciseTemplateService;
-
     @Autowired
     private ProductService productService;
-
     @Autowired
     private AppService appService;
-
     @Autowired
     private MealProductService mealProductService;
-
     @Autowired
     private MealProductRepository mealProductRepository;
-
     @Autowired
     private MealRepository mealRepository;
     @Autowired

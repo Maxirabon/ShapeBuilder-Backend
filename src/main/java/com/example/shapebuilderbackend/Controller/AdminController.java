@@ -33,6 +33,4 @@ public class AdminController {
         userService.deleteUser(deleteUserRequest);
         return ResponseEntity.ok().body("Uzytkownik zostal usuniety.");
     }
-
-
 }

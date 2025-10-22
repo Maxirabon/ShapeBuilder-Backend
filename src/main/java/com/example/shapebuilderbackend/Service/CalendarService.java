@@ -32,12 +32,10 @@ public class CalendarService {
     public void generateDaysForUser(User user) {
         List<Calendar> newDays = new ArrayList<>();
         LocalDate today = LocalDate.now();
-
         if (user.getDays().isEmpty()) {
             LocalDate endOfYear = LocalDate.of(today.getYear(), 12, 31);
             generateDays(newDays, user, today, endOfYear);
         }
-
         user.getDays().addAll(newDays);
     }
 
@@ -67,11 +65,9 @@ public class CalendarService {
     public DtoDaySummary calculateDaySummary(Calendar calendar) {
         List<DtoMealSummary> mealSummaries = new ArrayList<>();
         double protein = 0, fat = 0, carbs = 0, calories = 0;
-
         for (Meal meal : calendar.getMeals()) {
             DtoMealSummary ms = mealService.calculateMealSummary(meal);
             mealSummaries.add(ms);
-
             protein += ms.getTotalProtein();
             fat += ms.getTotalFat();
             carbs += ms.getTotalCarbs();
@@ -92,7 +88,6 @@ public class CalendarService {
         Calendar calendar = calendarRepository.findById(calendarId)
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono dnia o id: " + calendarId));
         DtoDaySummary daySummary = calculateDaySummary(calendar);
-
         List<DtoChartPointFood> chartData = List.of(new DtoChartPointFood(
                 daySummary.getDate(),
                 daySummary.getTotalCalories(),
@@ -108,7 +103,6 @@ public class CalendarService {
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono użytkownika o podanym id"));
         LocalDate start;
         LocalDate end;
-
         if (startOfWeek != null && endOfWeek != null) {
             start = startOfWeek;
             end = endOfWeek;
@@ -117,7 +111,6 @@ public class CalendarService {
             start = today.with(DayOfWeek.MONDAY);
             end = today.with(DayOfWeek.SUNDAY);
         }
-
         List<Calendar> calendars = calendarRepository.findByUserIdAndDayBetween(user.getId(), start, end);
         NutritionSummaryAggregate summary = calculateNutritionSummary(calendars);
         List<DtoChartPointFood> chartData = convertToChartData(summary.daySummaries());
@@ -139,7 +132,6 @@ public class CalendarService {
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono użytkownika o podanym id"));
         LocalDate startOfMonth;
         LocalDate endOfMonth;
-
         if (year != null && month != null) {
             startOfMonth = LocalDate.of(year, month, 1);
         } else {
@@ -147,7 +139,6 @@ public class CalendarService {
             startOfMonth = LocalDate.of(today.getYear(), today.getMonthValue(), 1);
         }
         endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
-
         List<Calendar> calendars = calendarRepository.findByUserIdAndDayBetween(user.getId(), startOfMonth, endOfMonth);
         NutritionSummaryAggregate summary = calculateNutritionSummary(calendars);
         List<DtoChartPointFood> chartData = convertToChartData(summary.daySummaries());
@@ -168,7 +159,6 @@ public class CalendarService {
         List<DtoDaySummary> daySummaries = calendars.stream()
                 .map(this::calculateDaySummary)
                 .toList();
-
         double avgCalories = daySummaries.stream().mapToDouble(DtoDaySummary::getTotalCalories).average().orElse(0);
         double avgProtein = daySummaries.stream().mapToDouble(DtoDaySummary::getTotalProtein).average().orElse(0);
         double avgCarbs = daySummaries.stream().mapToDouble(DtoDaySummary::getTotalCarbs).average().orElse(0);
@@ -196,12 +186,12 @@ public class CalendarService {
 
         return calculateDayExerciseSummary(calendar);
     }
+
     public DtoPeriodExerciseSummary getWeekExerciseSummary(Long userId, LocalDate startOfWeek, LocalDate endOfWeek) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono użytkownika o podanym id"));
         LocalDate start;
         LocalDate end;
-
         if (startOfWeek != null && endOfWeek != null) {
             start = startOfWeek;
             end = endOfWeek;
@@ -210,11 +200,9 @@ public class CalendarService {
             start = today.with(DayOfWeek.MONDAY);
             end = today.with(DayOfWeek.SUNDAY);
         }
-
         List<DtoDayExerciseSummary> daySummaries = getExerciseSummaryForPeriod(user.getId(), start, end);
         double totalVolume = daySummaries.stream().mapToDouble(DtoDayExerciseSummary::getTotalVolume).sum();
         double avgVolume = daySummaries.isEmpty() ? 0 : totalVolume / daySummaries.size();
-
         List<DtoChartPointExercise> chartData = daySummaries.stream()
                 .map(d -> new DtoChartPointExercise(d.getDate(), d.getTotalVolume(), d.getAvgVolume()))
                 .toList();
@@ -227,16 +215,13 @@ public class CalendarService {
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono użytkownika o podanym id"));
         LocalDate startOfMonth;
         LocalDate endOfMonth;
-
         if (year != null && month != null) {
             startOfMonth = LocalDate.of(year, month, 1);
         } else {
             LocalDate today = LocalDate.now();
             startOfMonth = LocalDate.of(today.getYear(), today.getMonthValue(), 1);
         }
-
         endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
-
         List<DtoDayExerciseSummary> daySummaries = getExerciseSummaryForPeriod(user.getId(), startOfMonth, endOfMonth);
         double totalVolume = daySummaries.stream().mapToDouble(DtoDayExerciseSummary::getTotalVolume).sum();
         double avgVolume = daySummaries.isEmpty() ? 0 : totalVolume / daySummaries.size();
@@ -258,11 +243,9 @@ public class CalendarService {
                         e.getWeight()
                 ))
                 .toList();
-
         double totalVolume = exercises.stream()
                 .mapToDouble(e -> e.getSets() * e.getRepetitions() * e.getWeight())
                 .sum();
-
         double avgWeight = exercises.stream()
                 .mapToDouble(DtoExerciseSummary::getWeight)
                 .average()

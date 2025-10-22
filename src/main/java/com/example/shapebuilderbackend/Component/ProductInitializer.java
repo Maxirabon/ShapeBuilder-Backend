@@ -13,9 +13,7 @@ import java.util.List;
 
 @Component
 public class ProductInitializer implements CommandLineRunner {
-
     private final ProductRepository productRepository;
-
     public ProductInitializer(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
@@ -25,7 +23,6 @@ public class ProductInitializer implements CommandLineRunner {
         if (productRepository.count() > 0) {
             return;
         }
-
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("products.sql")) {
             if (is == null) {
                 throw new NotFoundException("Nie znaleziono pliku products.sql w resources");

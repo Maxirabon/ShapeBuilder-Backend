@@ -13,9 +13,7 @@ import java.util.List;
 
 @Component
 public class ExerciseTemplateInitializer implements CommandLineRunner {
-
     private final ExerciseTemplateRepository repository;
-
     public ExerciseTemplateInitializer(ExerciseTemplateRepository repository) {
         this.repository = repository;
     }
@@ -25,12 +23,10 @@ public class ExerciseTemplateInitializer implements CommandLineRunner {
         if (repository.count() > 0) {
             return;
         }
-
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("exercises.sql")) {
             if (is == null) {
                 throw new FileNotFoundException("Nie znaleziono pliku exercises.sql w resources");
             }
-
             List<String> exerciseNames = new BufferedReader(new InputStreamReader(is))
                     .lines()
                     .filter(line -> !line.isBlank())

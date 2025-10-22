@@ -62,7 +62,6 @@ public class UserService {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new ConflictException("Użytkownik o podanym emailu już istnieje");
         }
-
         Activity activity;
         try {
             activity = Activity.valueOf(registerRequest.getActivity().toUpperCase());

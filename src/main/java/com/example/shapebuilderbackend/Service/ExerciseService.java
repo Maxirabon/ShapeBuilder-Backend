@@ -58,7 +58,6 @@ public class ExerciseService {
         if (exists) {
             throw new ConflictException("Ćwiczenie już znajduje się tego dnia. Usuń je lub zmodyfikuj!");
         }
-
         Exercise exercise = new Exercise();
         exercise.setExerciseTemplate(template);
         exercise.setSets(addExerciseRequest.getSets());
