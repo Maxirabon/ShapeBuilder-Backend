@@ -13,6 +13,7 @@ public class DtoMonthSummary {
     private int year;
     private int month;
     private List<DtoDaySummary> days;
+    private double totalCalories;
     private double averageCalories;
     private double averageProtein;
     private double averageCarbs;

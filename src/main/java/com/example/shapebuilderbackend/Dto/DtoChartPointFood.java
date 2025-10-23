@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class DtoChartPointFood {
     private LocalDate date;
-    private double calories;
+    private double totalCalories;
     private double protein;
     private double carbs;
     private double fat;

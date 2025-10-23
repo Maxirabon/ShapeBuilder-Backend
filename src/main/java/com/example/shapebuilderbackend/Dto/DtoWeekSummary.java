@@ -14,6 +14,7 @@ public class DtoWeekSummary {
     private LocalDate startDate;
     private LocalDate endDate;
     private List<DtoDaySummary> days;
+    private double totalCalories;
     private double averageCalories;
     private double averageProtein;
     private double averageCarbs;

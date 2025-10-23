@@ -119,6 +119,7 @@ public class CalendarService {
                 start,
                 end,
                 summary.daySummaries(),
+                summary.totalCalories(),
                 summary.avgCalories(),
                 summary.avgProtein(),
                 summary.avgCarbs(),
@@ -147,6 +148,7 @@ public class CalendarService {
                 startOfMonth.getYear(),
                 startOfMonth.getMonthValue(),
                 summary.daySummaries(),
+                summary.totalCalories(),
                 summary.avgCalories(),
                 summary.avgProtein(),
                 summary.avgCarbs(),
@@ -159,12 +161,19 @@ public class CalendarService {
         List<DtoDaySummary> daySummaries = calendars.stream()
                 .map(this::calculateDaySummary)
                 .toList();
-        double avgCalories = daySummaries.stream().mapToDouble(DtoDaySummary::getTotalCalories).average().orElse(0);
-        double avgProtein = daySummaries.stream().mapToDouble(DtoDaySummary::getTotalProtein).average().orElse(0);
-        double avgCarbs = daySummaries.stream().mapToDouble(DtoDaySummary::getTotalCarbs).average().orElse(0);
-        double avgFat = daySummaries.stream().mapToDouble(DtoDaySummary::getTotalFat).average().orElse(0);
+        double totalCalories = daySummaries.stream().mapToDouble(DtoDaySummary::getTotalCalories).sum();
+        double avgCalories = daySummaries.isEmpty() ? 0 : totalCalories / daySummaries.size();
 
-        return new NutritionSummaryAggregate(daySummaries, avgCalories, avgProtein, avgCarbs, avgFat);
+        double totalProtein = daySummaries.stream().mapToDouble(DtoDaySummary::getTotalProtein).sum();
+        double avgProtein = daySummaries.isEmpty() ? 0 : totalProtein / daySummaries.size();
+
+        double totalCarbs = daySummaries.stream().mapToDouble(DtoDaySummary::getTotalCarbs).sum();
+        double avgCarbs = daySummaries.isEmpty() ? 0 : totalCarbs / daySummaries.size();
+
+        double totalFat = daySummaries.stream().mapToDouble(DtoDaySummary::getTotalFat).sum();
+        double avgFat = daySummaries.isEmpty() ? 0 : totalFat / daySummaries.size();
+
+        return new NutritionSummaryAggregate(daySummaries, totalCalories, avgCalories, totalProtein, avgProtein, totalCarbs, avgCarbs, totalFat, avgFat);
     }
 
     private List<DtoChartPointFood> convertToChartData(List<DtoDaySummary> days) {
