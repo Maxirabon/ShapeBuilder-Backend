@@ -10,9 +10,11 @@ import com.example.shapebuilderbackend.Model.Calendar;
 import com.example.shapebuilderbackend.Model.Product;
 import com.example.shapebuilderbackend.Model.Role.Role;
 import com.example.shapebuilderbackend.Model.User;
+import com.example.shapebuilderbackend.Model.WeightHistory;
 import com.example.shapebuilderbackend.Repository.CalendarRepository;
 import com.example.shapebuilderbackend.Repository.ProductRepository;
 import com.example.shapebuilderbackend.Repository.UserRepository;
+import com.example.shapebuilderbackend.Repository.WeightHistoryRepository;
 import com.example.shapebuilderbackend.Security.JwtService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +50,7 @@ public class UserService {
     private ProductRepository productRepository;
 
     @Autowired
-    private CalendarRepository calendarRepository;
+    private WeightHistoryRepository weightHistoryRepository;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, CalendarService calendarService, ProductRepository productRepository) {
         this.userRepository = userRepository;
@@ -102,11 +104,28 @@ public class UserService {
                 updateProfileRequest.getWeight() <= 0) {
             throw new ForbiddenException("Wiek, wzrost i waga muszą być większe od zera.");
         }
+
+        if (Math.abs(user.getWeight() - updateProfileRequest.getWeight()) > 0.01) {
+            WeightHistory history = new WeightHistory();
+            history.setUser(user);
+            history.setWeight(updateProfileRequest.getWeight());
+            history.setDate(LocalDate.now());
+            weightHistoryRepository.save(history);
+        }
+
         user.setAge(updateProfileRequest.getAge());
         user.setHeight(updateProfileRequest.getHeight());
         user.setWeight(updateProfileRequest.getWeight());
         user.setActivity(updateProfileRequest.getActivity());
         userRepository.save(user);
+    }
+
+    public List<DtoWeightHistory> getWeightHistory() {
+        User user = getCurrentUser();
+        return weightHistoryRepository.findByUserIdOrderByDateDesc(user.getId())
+                .stream()
+                .map(h -> new DtoWeightHistory(h.getDate(), h.getWeight()))
+                .collect(Collectors.toList());
     }
 
     public void changePassword(ChangePasswordRequest changePasswordRequest) {

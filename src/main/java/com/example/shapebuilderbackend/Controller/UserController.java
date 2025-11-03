@@ -72,6 +72,16 @@ public class UserController {
         return ResponseEntity.ok(Map.of("message", "Profil zaktualizowany"));
     }
 
+    @GetMapping("/weight-history")
+    @Operation(summary = "Pobranie historii wagi użytkownika", description = "Zwraca listę wszystkich zmian wagi użytkownika wraz z datami ich zapisania. " + "Historia jest uporządkowana malejąco, od najnowszych do najstarszych wpisów.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Zwrócono historię wagi użytkownika"),
+            @ApiResponse(responseCode = "401", description = "Użytkownik niezalogowany lub token nieważny")
+    })
+    public ResponseEntity<List<DtoWeightHistory>> getWeightHistory() {
+        return ResponseEntity.ok(userService.getWeightHistory());
+    }
+
     @PutMapping("/changePassword")
     @Operation(summary = "Zmiana hasła użytkownika", description = "Pozwala użytkownikowi zmienić hasło")
     @ApiResponses({
