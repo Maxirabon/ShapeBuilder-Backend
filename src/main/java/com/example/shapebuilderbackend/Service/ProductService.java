@@ -1,8 +1,6 @@
 package com.example.shapebuilderbackend.Service;
 
-import com.example.shapebuilderbackend.Dto.AddUserProductRequest;
-import com.example.shapebuilderbackend.Dto.DtoProductSummary;
-import com.example.shapebuilderbackend.Dto.GetAllProductsResponse;
+import com.example.shapebuilderbackend.Dto.*;
 import com.example.shapebuilderbackend.Exception.BadRequestException;
 import com.example.shapebuilderbackend.Exception.ForbiddenException;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
@@ -26,6 +24,54 @@ public class ProductService {
                 .map(et -> new GetAllProductsResponse(et.getId(), et.getName(), et.getProtein(), et.getFat(), et.getCarbs(), et.getCalories(), et.isCustom()))
                 .collect(Collectors.toList());
     };
+
+    public AddProductResponse addProduct(AddProductRequest addProductRequest) {
+        Product product = new Product();
+        product.setName(addProductRequest.getName());
+        product.setProtein(addProductRequest.getProtein());
+        product.setFat(addProductRequest.getFat());
+        product.setCarbs(addProductRequest.getCarbs());
+        product.setCalories(addProductRequest.getCalories());
+        product.setCustom(false);
+        Product saved = productRepository.save(product);
+
+        return new AddProductResponse(
+                saved.getId(),
+                saved.getName(),
+                saved.getProtein(),
+                saved.getFat(),
+                saved.getCarbs(),
+                saved.getCalories(),
+                saved.isCustom()
+        );
+    }
+
+    public DtoUpdateProduct updateProduct(DtoUpdateProduct updateProductRequest) {
+        Product updatedProduct = productRepository.findById(updateProductRequest.getId())
+                .orElseThrow(() -> new NotFoundException("Nie znaleziono produktu o podanym id: "+ updateProductRequest.getId()));
+        updatedProduct.setName(updateProductRequest.getName());
+        updatedProduct.setProtein(updateProductRequest.getProtein());
+        updatedProduct.setFat(updateProductRequest.getFat());
+        updatedProduct.setCarbs(updateProductRequest.getCarbs());
+        updatedProduct.setCalories(updateProductRequest.getCalories());
+        Product saved = productRepository.save(updatedProduct);
+
+        return new DtoUpdateProduct(
+                saved.getId(),
+                saved.getName(),
+                saved.getProtein(),
+                saved.getFat(),
+                saved.getCarbs(),
+                saved.getCalories()
+        );
+    }
+
+    public void deleteProduct(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException("Nie znaleziono produktu o id: "+ productId));
+
+        productRepository.delete(product);
+    }
 
     public DtoProductSummary calculateProductSummary(MealProduct mp) {
         if (mp == null) {
