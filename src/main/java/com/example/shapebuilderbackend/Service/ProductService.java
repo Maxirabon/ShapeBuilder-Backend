@@ -6,7 +6,9 @@ import com.example.shapebuilderbackend.Exception.ForbiddenException;
 import com.example.shapebuilderbackend.Exception.NotFoundException;
 import com.example.shapebuilderbackend.Model.MealProduct;
 import com.example.shapebuilderbackend.Model.Product;
+import com.example.shapebuilderbackend.Repository.MealProductRepository;
 import com.example.shapebuilderbackend.Repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,8 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private MealProductRepository mealProductRepository;
 
     public List<GetAllProductsResponse> getAllProducts(){
         return productRepository.findAll().stream()
@@ -66,10 +70,11 @@ public class ProductService {
         );
     }
 
+    @Transactional
     public void deleteProduct(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("Nie znaleziono produktu o id: "+ productId));
-
+        mealProductRepository.deleteAllByProductId(productId);
         productRepository.delete(product);
     }
 

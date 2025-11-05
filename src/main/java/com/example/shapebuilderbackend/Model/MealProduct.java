@@ -21,7 +21,7 @@ public class MealProduct {
     private Meal meal;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", foreignKey = @ForeignKey(value = ConstraintMode.CONSTRAINT))
     @ToString.Exclude
     private Product product;
 
